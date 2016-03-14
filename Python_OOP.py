@@ -1,5 +1,6 @@
 #以下来自廖雪峰的Python学习之Python面向对象编程
 
+import types
 #面向过程的程序设计把计算机程序视为一系列的命令集合，即一组函数的顺序执行。
 #为了简化程序设计，面向过程把函数继续切分为子函数，即把大块函数通过切割成小块函数来降低系统的复杂度。
 #而面向对象的程序设计把计算机程序视为一组对象的集合，而每个对象都可以接收其他对象发过来的消息，并处理这些消息，计算机程序的执行就是一系列消息在各个对象之间传递。
@@ -55,7 +56,7 @@ class Student(object):
 print('-----------------------------------------')
 
 #数据封装-----------------------------------
-#但是，既然Student实例本身就拥有这些数据，要访问这些数据，就没有必要从外面的函数去访问，可以直接在Student类的内部定义访问数据的函数，这样，就把“数据”给封装起来了
+#但是，既然Student实例本身就拥有这些数据，要访问这些数据，就没有必要从外面的函数去访问，可以直接在Student类的内部定义访问数据的函数，这样就把“数据”给封装起来了
 #这些封装数据的函数是和Student类本身是关联起来的，我们称之为类的方法
 class Student(object):
     def __init__(self, name, score):
@@ -124,3 +125,141 @@ print('-----------------------------------------\n')
 
 
 #继承和多态////////////////////////////////////////
+#在OOP程序设计中，当我们定义一个class的时候，可以从某个现有的class继承
+#新的class称为子类（Subclass），而被继承的class称为基类、父类或超类（Base class、Super class）。
+class Animal(object):
+	def run(self):
+		print('Animal is running...')
+#当我们需要编写Dog和Cat类时，就可以直接从Animal类继承
+class Cat(Animal):
+	pass
+class Dog(Animal):
+	pass
+#对于Dog来说，Animal就是它的父类，对于Animal来说，Dog就是它的子类。Cat和Dog类似。
+#由于Animial实现了run()方法，因此，Dog和Cat作为它的子类，什么事也没干，就自动拥有了run()方法
+cat = Cat()
+dog = Dog()
+cat.run()
+dog.run()
+#当子类和父类都存在相同的run()方法时，子类的run()覆盖了父类的run()，在代码运行的时候，总是会调用子类的run()。这样，我们就获得了继承的另一个好处：多态。
+class Dog(Animal):
+    def run(self):
+        print('Dog is running...')
+class Cat(Animal):
+    def run(self):
+        print('Cat is running...')
+#多态的好处就是，当我们需要传入Dog、Cat、Tortoise……时，我们只需要接收Animal类型就可以了，因为Dog、Cat、Tortoise……都是Animal类型，然后，按照Animal类型进行操作即可
+#由于Animal类型有run()方法，因此，传入的任意类型，只要是Animal类或者子类，就会自动调用实际类型的run()方法，这就是多态的意思：
+#对于一个变量，我们只需要知道它是Animal类型，无需确切地知道它的子类型，就可以放心地调用run()方法，而具体调用的run()方法是作用在Animal、Dog、Cat上
+#由运行时该对象的确切类型决定，这就是多态真正的威力：
+#调用方只管调用，不管细节，而当我们新增一种Animal的子类时，只要确保run()方法编写正确，不用管原来的代码是如何调用的。这就是著名的“开闭”原则：
+#对扩展开放：允许新增Animal子类；
+#对修改封闭：不需要修改依赖Animal类型的函数。
+print('-----------------------------------------')
+
+#静态语言vs动态语言---------------------------------------------------
+#对于静态语言（例如Java）来说，如果需要传入Animal类型，则传入的对象必须是Animal类型或者它的子类，否则，将无法调用run()方法。
+#对于Python这样的动态语言来说，则不一定需要传入Animal类型。我们只需要保证传入的对象有一个run()方法就可以了：
+class Timer(object):
+    def run(self):
+        print('Start...')
+#这就是动态语言的“鸭子类型”，它并不要求严格的继承体系，一个对象只要“看起来像鸭子，走起路来像鸭子”，那它就可以被看做是鸭子。
+#Python的“file-like object“就是一种鸭子类型。对真正的文件对象，它有一个read()方法，返回其内容。但是，许多对象，只要有read()方法，都被视为“file-like object“。
+#许多函数接收的参数就是“file-like object“，你不一定要传入真正的文件对象，完全可以传入任何实现了read()方法的对象。
+print('-----------------------------------------\n')
+
+
+#获取对象信息/////////////////////////////////////
+#当我们拿到一个对象的引用时，如何知道这个对象是什么类型、有哪些方法呢？
+#使用type()-----------------------------------------
+#首先，我们来判断对象类型，使用type()函数：
+#基本类型都可以用type()判断：
+print('type(123) =', type(123))
+print('type(\'123\') =', type('123'))
+print('type(None) =', type(None))
+#如果一个变量指向函数或者类，也可以用type()判断：
+print('type(abs) =', type(abs))
+a = Animal()
+print('type(a) =', type(a))
+#type()函数返回的是什么类型呢？它返回对应的Class类型。如果我们要在if语句中判断，就需要比较两个变量的type类型是否相同
+print('type(123)==type(456):', type(123)==type(456))
+print('type(123)==int:', type(123)==int)
+print('type(\'abc\')==type(\'123\'):', type('abc')==type('123'))
+print('type(\'abc\')==str:', type('abc')==str)
+print('type(\'abc\')==type(123):', type('abc')==type(123))
+#判断基本数据类型可以直接写int，str等，但如果要判断一个对象是否是函数怎么办？可以使用types模块中定义的常量
+def fn():
+	pass
+print('type(fn)==types.FunctionType:', type(fn)==types.FunctionType)
+print('type(abs)==types.BuiltinFunctionType:', type(abs)==types.BuiltinFunctionType)
+print('type(lambda x: x)==types.LambdaType:', type(lambda x: x)==types.LambdaType)
+print('type((x for x in range(10)))==types.GeneratorType:', type((x for x in range(10)))==types.GeneratorType)
+print('-----------------------------------------')
+
+#使用isinstance()----------------------------------------
+#对于class的继承关系来说，使用type()就很不方便。我们要判断class的类型，可以使用isinstance()函数。
+#我们回顾上次的例子，如果继承关系是：  object -> Animal -> Dog/Cat
+d = Dog()
+c = Cat()
+a = Animal()
+print('isinstance(a, Dog) =', isinstance(a, Dog))
+print('isinstance(a, Animal) =', isinstance(a, Animal))
+print('isinstance(c, Animal) =', isinstance(c, Animal))
+#能用type()判断的基本类型也可以用isinstance()判断：
+print('isinstance(123, int) =', isinstance(123, int))
+print('isinstance(\'123\', str) =', isinstance('123', str))
+#并且还可以判断一个变量是否是某些类型中的一种，比如下面的代码就可以判断是否是list或者tuple：
+print('isinstance([1, 2, 3], (list, tuple)) =', isinstance([1, 2, 3], (list, tuple)))
+print('isinstance((1, 2, 3), (list, tuple)) =', isinstance((1, 2, 3), (list, tuple)))
+print('-----------------------------------------')
+
+#使用dir()------------------------------------------------
+#如果要获得一个对象的所有属性和方法，可以使用dir()函数，它返回一个包含字符串的list，比如，获得一个str对象的所有属性和方法：
+print('dir(\'ABC\') =', dir('ABC'))
+print('dir(str) =', dir(str))
+#仅仅把属性和方法列出来是不够的，配合getattr()、setattr()以及hasattr()，我们可以直接操作一个对象的状态：
+class MyObject(object):
+    def __init__(self):
+        self.x = 9
+    def power(self):
+        return self.x * self.x
+obj = MyObject()
+#紧接着，可以测试该对象的属性：
+print('hasattr(obj, \'x\') =', hasattr(obj, 'x')) # 有属性'x'吗？
+print('obj.x =', obj.x)
+print('hasattr(obj, \'y\') =', hasattr(obj, 'y')) # 有属性'y'吗？
+setattr(obj, 'y', 19) # 设置一个属性'y'
+print('hasattr(obj, \'y\') =', hasattr(obj, 'y')) # 有属性'y'吗？
+print('getattr(obj, \'y\') =', getattr(obj, 'y')) # 获取属性'y'
+print('obj.y =', obj.y) # 获取属性'y'
+#可以传入一个default参数，如果属性不存在，就返回默认值：
+print('getattr(obj, \'z\') =', getattr(obj, 'z', 404))
+#也可以获得对象的方法：
+print('hasattr(obj, \'power\') =', hasattr(obj, 'power')) # 有属性'power'吗？
+print('getattr(obj, \'power\') =', getattr(obj, 'power')) # 获取属性'power'
+fn = getattr(obj, 'power') # 获取属性'power'并赋值到变量fn
+print('fn =', fn) # fn指向obj.power
+print('fn() =', fn()) # 调用fn()与调用obj.power()是一样的
+print('-----------------------------------------\n')
+
+
+#实例属性和类属性///////////////////////////////////////
+#给实例绑定属性的方法是通过实例变量，或者通过self变量：
+class Student(object):
+    def __init__(self, name):
+        self.name = name
+s = Student('Bob')
+#但是，如果Student类本身需要绑定一个属性呢？可以直接在class中定义属性，这种属性是类属性，归Student类所有：
+class Student(object):
+    name = 'Student'
+#当我们定义了一个类属性后，这个属性虽然归类所有，但类的所有实例都可以访问到。来测试一下：
+s = Student() # 创建实例s
+print('s.name =', s.name) # 打印name属性，因为实例并没有name属性，所以会继续查找class的name属性
+print('Student.name =', Student.name) # 打印类的name属性
+s.name = 'Michael' # 给实例绑定name属性
+print('s.name =', s.name) # 由于实例属性优先级比类属性高，因此，它会屏蔽掉类的name属性
+print('Student.name =', Student.name) # 但是类属性并未消失，用Student.name仍然可以访问
+del s.name # 如果删除实例的name属性
+print('s.name =', s.name) # 再次调用s.name，由于实例的name属性没有找到，类的name属性就显示出来了
+#从上面的例子可以看出，在编写程序的时候，千万不要把实例属性和类属性使用相同的名字
+#因为相同名称的实例属性将屏蔽掉类属性，但是当你删除实例属性后，再使用相同的名称，访问到的将是类属性。
