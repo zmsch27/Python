@@ -14,7 +14,6 @@ def print_score(std):
     print('%s: %s' % (std['name'], std['score']))
 print_score(std1)
 print_score(std2)
-
 #如果采用面向对象的程序设计思想，我们首选思考的不是程序的执行流程，而是Student这种数据类型应该被视为一个对象，这个对象拥有name和score这两个属性（Property）。
 #如果要打印一个学生的成绩，首先必须创建出这个学生对应的对象，然后，给对象发一个print_score消息，让对象自己把自己的数据打印出来。
 class Student(object):
