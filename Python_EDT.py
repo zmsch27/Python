@@ -110,3 +110,47 @@ print('-----------------------------------------\n')
 
 
 #调试////////////////////////////////////////////
+#程序能一次写完并正常运行的概率很小，基本不超过1%。总会有各种各样的bug需要修正。有的bug很简单，看看错误信息就知道
+#有的bug很复杂，我们需要知道出错时，哪些变量的值是正确的，哪些变量的值是错误的，因此，需要一整套调试程序的手段来修复bug。
+def foo(s):
+	n = int(s)
+	print('>>>n = %d' % s)
+	return 10/n
+def main():
+	foo('0')
+main()
+#用print()最大的坏处是将来还得删掉它，想想程序里到处都是print()，运行结果也会包含很多垃圾信息。所以，我们又有第二种方法。
+
+print('-----------------------------------------')
+#断言------------------------------------
+def foo(s):
+	n = int(s)
+	assert n!=0, 'n is zero!' 
+	return 10/n
+def main():
+	foo('0')
+main()
+#程序中如果到处充斥着assert，和print()相比也好不到哪去。不过，启动Python解释器时可以用-O参数来关闭assert   python3 -O err.py
+print('-----------------------------------------')
+
+#logging--------------------------------------
+#把print()替换为logging是第3种方式，和assert比，logging不会抛出错误，而且可以输出到文件：
+import logging
+s = '0'
+n = int(s)
+logging.info('n = %d' % n)
+print(10 / n)
+#logging.info()就可以输出一段文本。运行，发现除了ZeroDivisionError，没有任何信息。怎么回事？
+import logging
+logging.basicConfig(level=logging.INFO)
+#这就是logging的好处，它允许你指定记录信息的级别，有debug，info，warning，error等几个级别
+#当我们指定level=INFO时，logging.debug就不起作用了。同理，指定level=WARNING后，debug和info就不起作用了。
+#这样一来，你可以放心地输出不同级别的信息，也不用删除，最后统一控制输出哪个级别的信息。
+
+#pdb
+
+#IDE
+
+#单元测试
+
+#文档测试
